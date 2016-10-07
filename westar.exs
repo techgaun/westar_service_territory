@@ -48,12 +48,19 @@ defmodule Westar do
     coords
     |> String.split(" ")
     |> Enum.map(fn x ->
-      [lat | [lng | _]] = x
+      [lng | [lat | _]] = x
         |> String.split(",")
-      {lat, lng}
+
+      {float(lat), float(lng)}
     end)
   end
   def parse_kml_coords(_), do: []
+
+  def float(val) when is_bitstring(val) do
+    {v, _} = Float.parse(val)
+    v
+  end
+  def float(v), do: v
 
   def lat_long_in_polygon?(lat, lng, polygons) do
     start_point = length(polygons) - 1
@@ -62,27 +69,31 @@ defmodule Westar do
       |> Enum.reduce({false, start_point}, fn {{xi, yi}, idx}, {inside, itr_point} ->
         {xj, yj} = Enum.at(polygons, itr_point)
         intersect = ((yi > lng) != (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)
-        if intersect, do: inside = not inside
+        inside = if intersect, do: inside = not inside, else: inside
         {inside, idx + 1}
       end)
     inside
   end
 
-  def lat_long_in_kml_polygon?(lat, lng, {out_points, in_points}) when length(out_points) > 0 and length(in_points) >= 0 do
+  def lat_long_in_kml_polygon?(lat, lng, {out_points, in_points}) when length(out_points) > 0 and length(in_points) > 0 do
     lat_long_in_polygon?(lat, lng, out_points) and (not lat_long_in_polygon?(lat, lng, in_points))
   end
-  # def lat_long_in_kml_polygon?(lat, lng, {out_points, in_points}) when length(out_points) > 0 and length(in_points) === 0 do
-  #   lat_long_in_polygon?(lat, lng, out_points)
-  # end
-  def lat_long_in_kml_polygon?(lat, lng, {out_points, in_points}) do
-    false
+  def lat_long_in_kml_polygon?(lat, lng, {out_points, in_points}) when length(out_points) > 0 and length(in_points) === 0 do
+    lat_long_in_polygon?(lat, lng, out_points)
   end
+  def lat_long_in_kml_polygon?(_lat, _lng, {_out_points, _in_points}), do: false
 end
 
 # Westar.extract
 
 Westar.process
 |> Enum.any?(fn x ->
-  Westar.lat_long_in_kml_polygon?(-96.842775, 37.262043, x)
+  Westar.lat_long_in_kml_polygon?(37.262043, -96.842775, x)
+end)
+|> IO.inspect
+
+Westar.process
+|> Enum.any?(fn x ->
+  Westar.lat_long_in_kml_polygon?(37.6646855, -97.2477088, x)
 end)
 |> IO.inspect
