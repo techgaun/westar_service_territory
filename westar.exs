@@ -70,7 +70,7 @@ defmodule Westar do
         {xj, yj} = Enum.at(polygons, itr_point)
         intersect = ((yi > lng) != (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)
         inside = if intersect, do: inside = not inside, else: inside
-        {inside, idx + 1}
+        {inside, idx}
       end)
     inside
   end
@@ -96,4 +96,8 @@ Westar.process
 |> Enum.any?(fn x ->
   Westar.lat_long_in_kml_polygon?(37.6646855, -97.2477088, x)
 end)
+|> IO.inspect
+
+poly = [ {1, 1}, {1, 2}, {2, 2}, {2, 1} ]
+Westar.lat_long_in_polygon?(1.5, 1.5, poly)
 |> IO.inspect
