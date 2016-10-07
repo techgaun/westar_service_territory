@@ -88,13 +88,25 @@ end
 
 Westar.process
 |> Enum.any?(fn x ->
-  Westar.lat_long_in_kml_polygon?(37.262043, -96.842775, x)
+  Westar.lat_long_in_kml_polygon?(37.362042, -96.852774, x)
 end)
 |> IO.inspect
 
 Westar.process
 |> Enum.any?(fn x ->
   Westar.lat_long_in_kml_polygon?(37.6646855, -97.2477088, x)
+end)
+|> IO.inspect
+
+Westar.process
+|> Enum.any?(fn x ->
+  Westar.lat_long_in_kml_polygon?(37.8512914, -96.2924788, x)
+end)
+|> IO.inspect
+
+Westar.process
+|> Enum.any?(fn x ->
+  Westar.lat_long_in_kml_polygon?(38.9711268, -95.4733639, x)
 end)
 |> IO.inspect
 
