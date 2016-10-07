@@ -84,6 +84,7 @@ defmodule Westar do
   def lat_long_in_kml_polygon?(_lat, _lng, {_out_points, _in_points}), do: false
 end
 
+# use Westar.extract to parse data initially
 # Westar.extract
 
 Westar.process
@@ -112,4 +113,10 @@ end)
 
 poly = [ {1, 1}, {1, 2}, {2, 2}, {2, 1} ]
 Westar.lat_long_in_polygon?(1.5, 1.5, poly)
+|> IO.inspect
+
+Westar.process
+|> Enum.any?(fn x ->
+  Westar.lat_long_in_kml_polygon?(38.9711268, -95.4733639, x)
+end)
 |> IO.inspect
